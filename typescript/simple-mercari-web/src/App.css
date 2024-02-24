@@ -14,24 +14,24 @@
 }
 
 .Listing {
-  background-color: #222427;
-  min-height: 8vh;
+  background-color: #d5b40f;
+  min-height: 6vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: left;
-  font-size: calc(10px + 1vmin);
-  color: white;
+  align-items: left;
+  justify-content: center;
+  font-size: calc(12px + 1vmin);
+  color: rgb(255, 255, 255);
 }
 
 .ItemList {
-  background-color: #222427;
-  min-height: 8vh;
+  background-color: #4a86df;
+  min-height: 10vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: left;
-  font-size: calc(10px + 1vmin);
+  justify-content: center;
+  font-size: calc(8px + 1vmin);
   color: white;
 }
 
