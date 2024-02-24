@@ -32,7 +32,7 @@ app.add_middleware(
 
 # Function: Create table if it doesn't exist yet
 def create_tables():
-    con = sqlite3.connect(db / "mercari.sqlite3") #1. create connection object
+    con = sqlite3.connect(os.path.join(db, "mercari.sqlite3")) #1. create connection object
     cur = con.cursor() #create cursor
     cur.execute('''CREATE TABLE IF NOT EXISTS items 
              (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, category_id INTEGER, image_name TEXT)''')
@@ -44,8 +44,11 @@ def create_tables():
 
 def create_default_database():
     if not os.path.exists(db / "mercari.sqlite3"):
-        con = sqlite3.connect(db / "mercari.sqlite3")  # 2.create connection object
-        con.close()
+        open(os.path.join(db, "mercari.sqlite3"), 'a').close() # Create empty file
+        # con = sqlite3.connect(db / "mercari.sqlite3")  # 2.create connection object
+        # con.close()
+        create_tables()
+    else:
         create_tables()
 
 create_default_database()
