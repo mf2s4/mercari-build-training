@@ -5,27 +5,29 @@
 #         self.next = None
 
 class Solution:
-    def getIntersectionNode(self, headA, headB):
-        listA = []
-        listB = []
+    #Isn't working
+    # def getIntersectionNode(self, headA, headB):
+    #     listA = []
+    #     listB = []
 
-        while headA:
-            listA.append(headA)
-            headA = headA.next
-        while headB:
-            listB.append(headB)
-            headB = headB.next
+    #     while headA:
+    #         listA.append(headA)
+    #         headA = headA.next
+    #     while headB:
+    #         listB.append(headB)
+    #         headB = headB.next
         
-        previousNode = None
+    #     previousNode = None
 
-        while listA and listB != 0:
-            nodeA = listA.pop()
-            nodeB = listB.pop()
+    #     while listA and listB != 0:
+    #         nodeA = listA.pop()
+    #         nodeB = listB.pop()
 
-            if nodeA != nodeB:
-                return previousNode
+    #         if nodeA != nodeB:
+    #             return previousNode
             
-            previousNode = nodeA
+    #         previousNode = nodeA
+
 
     # Time: O(N) Space: O(1)
     def getIntersectionNode2(self, headA, headB):
