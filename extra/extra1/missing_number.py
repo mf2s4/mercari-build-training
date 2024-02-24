@@ -16,7 +16,7 @@ class Solution:
     def findDisappearedNumbers2(self, nums):
         n = set(nums)
         missing = []
-        for i in range(1, n+1):
-            if i not in nums:
+        for i in range(1, len(nums)+1):
+            if i not in n:
                 missing += [i]
         return missing
