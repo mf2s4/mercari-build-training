@@ -1,0 +1,17 @@
+version: '2.23' #My Docker Compose version is 2.23.0
+
+#Define Docker services
+services:
+  api:
+    image: build2024/app:latest #Docker image used for api #STEP4
+    ports:
+      - "9000:9000" #port 9000 on host to 9000 of container
+    environment:
+      - FRONT_URL=http://localhost:3000
+
+  frontend:
+    image: build2024/web:latest
+    ports:
+      - "3000:3000" #map port 3000 on host to 3000 on container #STEP6
+    environment:
+      - REACT_APP_API_URL=http://localhost:9000
