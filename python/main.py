@@ -44,6 +44,7 @@ def create_tables():
 
 def create_default_database():
     if not os.path.exists(db / "mercari.sqlite3"):
+        logger.info(f"Creating database file: {os.path.join(db, 'mercari.sqlite3')}")
         open(os.path.join(db, "mercari.sqlite3"), 'a').close() # Create empty file
         # con = sqlite3.connect(db / "mercari.sqlite3")  # 2.create connection object
         # con.close()
