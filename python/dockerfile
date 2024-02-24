@@ -9,7 +9,7 @@ RUN apk update && apk add --no-cache python3 py3-pip
 #Set the working directory for subsequent commands to inside the container
 WORKDIR /app
 
-COPY db/mercari.sqlite3 /app/
+# COPY db/mercari.sqlite3 /app/
 
 
 #Copy requirements.txt file from host into the container
@@ -21,7 +21,7 @@ RUN pip3 install -r requirements.txt
 #Create a group named "mercari" and a user named "trainee" within that group
 RUN addgroup -S mercari && adduser -S trainee -G mercari
 # RUN chown -R trainee:mercari /path/to/db
-RUN chown trainee:mercari /app/mercari.sqlite3
+# RUN chown trainee:mercari /app/mercari.sqlite3
 
 
 #Set the user to "trainee"
@@ -42,8 +42,8 @@ EXPOSE 7000
 
 
 # STEP5.5
-# CMD ["python", "-V"]
+CMD ["python", "-V"]
 
 
 # # STEP5.6
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "7000"]
+# CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "7000"]
