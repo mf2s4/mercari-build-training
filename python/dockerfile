@@ -31,8 +31,8 @@ USER trainee
 COPY . .
 
 
-#Expose port 7000 from the container for external access
-EXPOSE 7000
+#Expose port 9000 from the container for external access
+EXPOSE 9000
 
 
 #Define default command to run when the container starts
