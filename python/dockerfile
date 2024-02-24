@@ -42,7 +42,7 @@ EXPOSE 7000
 
 
 # STEP5.5
-CMD ["python", "-V"]
+CMD ["python", "-version"]
 
 
 # # STEP5.6
