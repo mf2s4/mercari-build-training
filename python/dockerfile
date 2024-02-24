@@ -9,6 +9,8 @@ RUN apk update && apk add --no-cache python3 py3-pip
 #Set the working directory for subsequent commands to inside the container
 WORKDIR /app
 
+COPY db/mercari.sqlite3 /app/
+
 
 #Copy requirements.txt file from host into the container
 #Then intall Python dependencies from requirement.txt using pip
@@ -19,6 +21,7 @@ RUN pip3 install -r requirements.txt
 #Create a group named "mercari" and a user named "trainee" within that group
 RUN addgroup -S mercari && adduser -S trainee -G mercari
 # RUN chown -R trainee:mercari /path/to/db
+RUN chown trainee:mercari /app/mercari.sqlite3
 
 
 #Set the user to "trainee"
