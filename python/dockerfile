@@ -1,5 +1,5 @@
 FROM python:3.9-alpine
-#Specify base image for this Dockerfile
+#Specify base image for this Dockerfile.
 
 
 # Install Python and pip dependencies (Update the package list inside container)
@@ -38,7 +38,7 @@ COPY . .
 EXPOSE 7000
 
 
-#Define default command to run when the container starts
+###Define default command to run when the container starts
 
 
 # STEP5.5
