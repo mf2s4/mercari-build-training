@@ -42,6 +42,14 @@ def create_tables():
     con.commit()
     con.close()
 
+def create_default_database():
+    if not os.path.exists(db / "mercari.sqlite3"):
+        con = sqlite3.connect(db / "mercari.sqlite3")  # create connection object
+        con.close()
+        create_tables()
+
+create_default_database()
+
 @app.get("/")
 def root():
     logger.info("Saying hello to the world")

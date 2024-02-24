@@ -35,15 +35,15 @@ COPY . .
 
 
 #Expose port 7000 from the container for external access
-EXPOSE 7000
+EXPOSE 9000
 
 
 ###Define default command to run when the container starts
 
 
 # STEP5.5
-CMD ["python", "-version"]
+# CMD ["python", "-version"]
 
 
 # # STEP5.6
-# CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "7000"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "9000"]
