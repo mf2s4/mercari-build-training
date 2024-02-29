@@ -55,10 +55,10 @@ export const ItemList: React.FC<Prop> = (props) => {
   }, [reload]);
 
   return (
-    <div>
+    <div className="ItemList">
       {items.map((item) => {
         return (
-          <div key={item.id} className="ItemList">
+          <div key={item.id} className="Item">
             <img src={getSrcImg(item.image_name)} alt="item" />
             <p>
               <span>Name: {item.name}</span>
