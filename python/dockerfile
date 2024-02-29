@@ -18,7 +18,7 @@ RUN pip3 install -r requirements.txt
 
 #Create a group named "mercari" and a user named "trainee" within that group
 RUN addgroup -S mercari && adduser -S trainee -G mercari
-# RUN chown -R trainee:mercari /path/to/db
+RUN chown -R trainee:mercari /app
 
 
 #Set the user to "trainee"
@@ -33,7 +33,6 @@ COPY . .
 
 #Expose port 7000 from the container for external access
 EXPOSE 9000
-
 
 ###Define default command to run when the container starts
 

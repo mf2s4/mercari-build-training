@@ -12,7 +12,10 @@ app = FastAPI()
 logger = logging.getLogger("uvicorn")
 logger.level = logging.DEBUG
 images = pathlib.Path(__file__).parent.resolve() / "images"
-db = pathlib.Path(__file__).parent.parent.resolve() / "db"
+# db = pathlib.Path(__file__).parent.parent.resolve() / "db" 
+# The line below creates a file db within Python, which is not what we want
+# however, since Docker does not allow accessing files outside the build context for security reasons
+db = pathlib.Path(__file__).parent.resolve() / "db"
 origins = [os.environ.get("FRONT_URL", "http://localhost:3000")]
 app.add_middleware(
     CORSMiddleware,
@@ -32,7 +35,7 @@ app.add_middleware(
 
 # Function: Create table if it doesn't exist yet
 def create_tables():
-    con = sqlite3.connect(os.path.join(db, "mercari.sqlite3")) #1. create connection object
+    con = sqlite3.connect(os.path.join(db, "items.db")) #1. create connection object
     cur = con.cursor() #create cursor
     cur.execute('''CREATE TABLE IF NOT EXISTS items 
              (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, category_id INTEGER, image_name TEXT)''')
@@ -43,14 +46,21 @@ def create_tables():
     con.close()
 
 def create_default_database():
-    if not os.path.exists(db / "mercari.sqlite3"):
-        logger.info(f"Creating database file: {os.path.join(db, 'mercari.sqlite3')}")
-        open(os.path.join(db, "mercari.sqlite3"), 'a').close() # Create empty file
+    if not os.path.exists(db):
+        logger.debug("jjkjkj")
+        os.makedirs(db)
+        logger.debug(f"Creating database directory: {db}")
+    logger.debug("hjkhjh")
+    if not os.path.exists(os.path.join(db, "items.db")):
+        logger.debug("OIHIHHI")
+        logger.info(f"Creating database file: {os.path.join(db, 'items.db')}")
+        open(os.path.join(db, "items.db"), 'a').close() # Create empty file
         # con = sqlite3.connect(db / "mercari.sqlite3")  # 2.create connection object
         # con.close()
         create_tables()
     else:
         create_tables()
+    logger.debug("Debug")
 
 create_default_database()
 
@@ -62,7 +72,7 @@ def root():
 @app.get("/items")
 def get_items():
     try:
-        con = sqlite3.connect(db / "mercari.sqlite3")
+        con = sqlite3.connect(db / "items.db")
         cur = con.cursor()
         cur.execute("SELECT items.id, items.name, categories.name, items.image_name FROM items JOIN categories ON items.category_id = categories.id")
         items_data = []
@@ -86,7 +96,7 @@ async def add_item(name: str = Form(...), category: str = Form(...), image: Uplo
         with open(image_path, 'wb') as f:
             f.write(image_bytes)
         create_tables() #create table if it deosn't exist
-        con = sqlite3.connect(db / "mercari.sqlite3")
+        con = sqlite3.connect(db / "items.db")
         cur = con.cursor()
         cur.execute("SELECT id FROM categories WHERE name = ?", (category,))
         category_row = cur.fetchone()
@@ -149,7 +159,7 @@ def get_item(item_id: int):
 @app.get("/search")
 def get_items(keyword: str):
     try:
-        con = sqlite3.connect(db / "mercari.sqlite3")
+        con = sqlite3.connect(db / "items.db")
         cur = con.cursor()
         cur.execute("SELECT name, category_id FROM items WHERE name LIKE ?", ('%' + keyword + '%',))
         items_data = {"items": []}
