@@ -47,12 +47,9 @@ def create_tables():
 
 def create_default_database():
     if not os.path.exists(db):
-        logger.debug("jjkjkj")
         os.makedirs(db)
         logger.debug(f"Creating database directory: {db}")
-    logger.debug("hjkhjh")
     if not os.path.exists(os.path.join(db, "items.db")):
-        logger.debug("OIHIHHI")
         logger.info(f"Creating database file: {os.path.join(db, 'items.db')}")
         open(os.path.join(db, "items.db"), 'a').close() # Create empty file
         # con = sqlite3.connect(db / "mercari.sqlite3")  # 2.create connection object
@@ -60,7 +57,6 @@ def create_default_database():
         create_tables()
     else:
         create_tables()
-    logger.debug("Debug")
 
 create_default_database()
 
