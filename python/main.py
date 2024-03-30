@@ -13,8 +13,8 @@ logger = logging.getLogger("uvicorn")
 logger.level = logging.DEBUG
 images = pathlib.Path(__file__).parent.resolve() / "images"
 # db = pathlib.Path(__file__).parent.parent.resolve() / "db" 
-# The line below creates a file db within Python, which is not what we want
-# however, since Docker does not allow accessing files outside the build context for security reasons
+# The line below creates a file db within python, which is not what we want.
+# However, since Docker does not allow accessing files outside the build context for security reasons, this was done.
 db = pathlib.Path(__file__).parent.resolve() / "db"
 origins = [os.environ.get("FRONT_URL", "http://localhost:3000")]
 app.add_middleware(
