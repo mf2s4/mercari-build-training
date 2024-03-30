@@ -4,30 +4,22 @@
 #         self.val = x
 #         self.next = None
 
-class Solution:
-    #Isn't working
-    # def getIntersectionNode(self, headA, headB):
-    #     listA = []
-    #     listB = []
+class Linked_list:
+    # Time: O(N) Space: O(N)
+    def getIntersectionNode1(self, headA, headB):
+        hA_hashmap = {}
 
-    #     while headA:
-    #         listA.append(headA)
-    #         headA = headA.next
-    #     while headB:
-    #         listB.append(headB)
-    #         headB = headB.next
+        while headA:
+            hA_hashmap[headA] = 1
+            headA = headA.next
+
+        while headB:
+            if headB in hA_hashmap:
+                return headB
+            headB = headB.next
         
-    #     previousNode = None
-
-    #     while listA and listB != 0:
-    #         nodeA = listA.pop()
-    #         nodeB = listB.pop()
-
-    #         if nodeA != nodeB:
-    #             return previousNode
-            
-    #         previousNode = nodeA
-
+        return None
+    
 
     # Time: O(N) Space: O(1)
     def getIntersectionNode2(self, headA, headB):
@@ -60,5 +52,48 @@ class Solution:
         if hA == None:
             return None
         return hA
+    
+    # Two pointers Floyd's Linked List Cycle Finding Algorithm
+    def getIntersectionNode3(self, headA, headB):
+        p1 = headA
+        p2 = headB
 
+        #connect last node in A to the first node to form a cycle
+        while p1.next:
+            p1 = p1.next
+        p1.next = headA
+        p1 = p1.next
+
+        while p2:
+            while p1:
+                if p1 == p2:
+                    return p1
+                p1 = p1.next
+                if p1 == headA:
+                    break 
+            p2 = p2.next
+        return None
+
+    # Two pointers
+    def getIntersectionNode4(self, headA, headB):
+        p1 = headA
+        p2 = headB
+
+        # Go through nodes until intersection or until both nodes is None
+        while p1 != p2:
+            p1 = p1.next
+            p2 = p2.next
+
+            if p1 == p2:
+                return p1
+            
+            #if p1 reaches end, connect to B head #by switching to B from A, it accounts for any length difference
+            if not p1:
+                p1 = headB
+            
+            #if p2 reaches end, connect to A head
+            if not p2:
+                p2 = headA
+        
+        return p1
         
