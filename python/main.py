@@ -13,8 +13,8 @@ logger = logging.getLogger("uvicorn")
 logger.level = logging.DEBUG
 images = pathlib.Path(__file__).parent.resolve() / "images"
 # db = pathlib.Path(__file__).parent.parent.resolve() / "db" 
-# The line below creates a file db within Python, which is not what we want
-# however, since Docker does not allow accessing files outside the build context for security reasons
+# The line below creates a file db within python, which is not what we want.
+# However, since Docker does not allow accessing files outside the build context for security reasons, this was done.
 db = pathlib.Path(__file__).parent.resolve() / "db"
 origins = [os.environ.get("FRONT_URL", "http://localhost:3000")]
 app.add_middleware(
@@ -57,6 +57,7 @@ def create_default_database():
         create_tables()
     else:
         create_tables()
+
 create_default_database()
 
 @app.get("/")
@@ -114,7 +115,7 @@ async def add_item(name: str = Form(...), category: str = Form(...), image: Uplo
     except Exception as error:
         logger.error(f"An unexpected error occured. Error: {error}")
         raise HTTPException(status_code=500, detail=f"Error: {error}")
-    
+
 @app.get("/image/{image_name}")
 async def get_image(image_name):
     logger.info(f"Receive image: {image_name}")
