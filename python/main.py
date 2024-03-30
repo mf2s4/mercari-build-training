@@ -35,6 +35,7 @@ app.add_middleware(
 
 # Function: Create table if it doesn't exist yet
 def create_tables():
+    # con = sqlite3.connect(db / "mercari.sqlite3")
     con = sqlite3.connect(os.path.join(db, "items.db")) #1. create connection object
     cur = con.cursor() #create cursor
     cur.execute('''CREATE TABLE IF NOT EXISTS items 
@@ -68,6 +69,7 @@ def root():
 @app.get("/items")
 def get_items():
     try:
+        # con = sqlite3.connect(db / "mercari.sqlite3")
         con = sqlite3.connect(db / "items.db")
         cur = con.cursor()
         cur.execute("SELECT items.id, items.name, categories.name, items.image_name FROM items JOIN categories ON items.category_id = categories.id")
@@ -92,6 +94,7 @@ async def add_item(name: str = Form(...), category: str = Form(...), image: Uplo
         with open(image_path, 'wb') as f:
             f.write(image_bytes)
         create_tables() #create table if it deosn't exist
+        # con = sqlite3.connect(db / "mercari.sqlite3")
         con = sqlite3.connect(db / "items.db")
         cur = con.cursor()
         cur.execute("SELECT id FROM categories WHERE name = ?", (category,))
@@ -155,6 +158,7 @@ def get_item(item_id: int):
 @app.get("/search")
 def get_items(keyword: str):
     try:
+        # con = sqlite3.connect(db / "mercari.sqlite3")
         con = sqlite3.connect(db / "items.db")
         cur = con.cursor()
         cur.execute("SELECT name, category_id FROM items WHERE name LIKE ?", ('%' + keyword + '%',))
