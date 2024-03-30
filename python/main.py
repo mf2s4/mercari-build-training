@@ -12,7 +12,10 @@ app = FastAPI()
 logger = logging.getLogger("uvicorn")
 logger.level = logging.DEBUG
 images = pathlib.Path(__file__).parent.resolve() / "images"
-db = pathlib.Path(__file__).parent.parent.resolve() / "db"
+# db = pathlib.Path(__file__).parent.parent.resolve() / "db" 
+# The line below creates a file db within Python, which is not what we want
+# however, since Docker does not allow accessing files outside the build context for security reasons
+db = pathlib.Path(__file__).parent.resolve() / "db"
 origins = [os.environ.get("FRONT_URL", "http://localhost:3000")]
 app.add_middleware(
     CORSMiddleware,
@@ -22,25 +25,39 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-#Reset the table everytime virtual environment is re-built
-con = sqlite3.connect(db / "mercari.sqlite3") #create connection object
-cur = con.cursor() #create cursor
-cur.execute('''DROP TABLE IF EXISTS items''')
-cur.execute('''DROP TABLE IF EXISTS categories''')
-con.commit()
-con.close()
+# #Reset the table everytime virtual environment is re-built
+# con = sqlite3.connect(db / "mercari.sqlite3") #create connection object
+# cur = con.cursor() #create cursor
+# cur.execute('''DROP TABLE IF EXISTS items''')
+# cur.execute('''DROP TABLE IF EXISTS categories''')
+# con.commit()
+# con.close()
 
 # Function: Create table if it doesn't exist yet
 def create_tables():
-    con = sqlite3.connect(db / "mercari.sqlite3") #create connection object
+    # con = sqlite3.connect(db / "mercari.sqlite3")
+    con = sqlite3.connect(os.path.join(db, "items.db")) #1. create connection object
     cur = con.cursor() #create cursor
     cur.execute('''CREATE TABLE IF NOT EXISTS items 
              (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, category_id INTEGER, image_name TEXT)''')
-
     cur.execute('''CREATE TABLE IF NOT EXISTS categories 
                  (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)''')
     con.commit()
     con.close()
+
+def create_default_database():
+    if not os.path.exists(db):
+        os.makedirs(db)
+        logger.debug(f"Creating database directory: {db}")
+    if not os.path.exists(os.path.join(db, "items.db")):
+        logger.info(f"Creating database file: {os.path.join(db, 'items.db')}")
+        open(os.path.join(db, "items.db"), 'a').close() # Create empty file
+        # con = sqlite3.connect(db / "mercari.sqlite3")  # 2.create connection object
+        # con.close()
+        create_tables()
+    else:
+        create_tables()
+create_default_database()
 
 @app.get("/")
 def root():
@@ -50,7 +67,8 @@ def root():
 @app.get("/items")
 def get_items():
     try:
-        con = sqlite3.connect(db / "mercari.sqlite3")
+        # con = sqlite3.connect(db / "mercari.sqlite3")
+        con = sqlite3.connect(db / "items.db")
         cur = con.cursor()
         cur.execute("SELECT items.id, items.name, categories.name, items.image_name FROM items JOIN categories ON items.category_id = categories.id")
         items_data = []
@@ -74,24 +92,21 @@ async def add_item(name: str = Form(...), category: str = Form(...), image: Uplo
         with open(image_path, 'wb') as f:
             f.write(image_bytes)
         create_tables() #create table if it deosn't exist
-        con = sqlite3.connect(db / "mercari.sqlite3")
+        # con = sqlite3.connect(db / "mercari.sqlite3")
+        con = sqlite3.connect(db / "items.db")
         cur = con.cursor()
         cur.execute("SELECT id FROM categories WHERE name = ?", (category,))
         category_row = cur.fetchone()
-
         if category_row == None:
             cur.execute("INSERT INTO categories (name) VALUES (?)", (category,))
             con.commit()
             category_id = cur.lastrowid
         else:
             category_id = category_row[0]
-
         cur.execute("INSERT INTO items (name, category_id, image_name) VALUES (?, ?, ?)", (name, category_id, image_name))
         con.commit()
         con.close()
-
         logger.info(f"Receive item: {name}, category_id: {category_id}, category: {category}, image: {image_name}")
-
         return {"message": f"item received: {name}, Category: {category}"}
     except sqlite3.Error as sqlerror:
         logger.error(f"SQLite error occurred: {sqlerror}")
@@ -99,22 +114,18 @@ async def add_item(name: str = Form(...), category: str = Form(...), image: Uplo
     except Exception as error:
         logger.error(f"An unexpected error occured. Error: {error}")
         raise HTTPException(status_code=500, detail=f"Error: {error}")
-
-
+    
 @app.get("/image/{image_name}")
 async def get_image(image_name):
     logger.info(f"Receive image: {image_name}")
     # Create image path
     image_path = images / image_name
-
     if not image_name.endswith(".jpg"):
         logger.error(f"Image path does not end with .jpg")
         raise HTTPException(status_code=400, detail="Image path does not end with .jpg Make sure the file name is correct")
-
     elif not image_path.exists():
         logger.error(f"Image not found: {image_name}")
         image_path = images / "default.jpg"
-
     return FileResponse(image_path)
 
 @app.get("/items/{item_id}")
@@ -137,7 +148,8 @@ def get_item(item_id: int):
 @app.get("/search")
 def get_items(keyword: str):
     try:
-        con = sqlite3.connect(db / "mercari.sqlite3")
+        # con = sqlite3.connect(db / "mercari.sqlite3")
+        con = sqlite3.connect(db / "items.db")
         cur = con.cursor()
         cur.execute("SELECT name, category_id FROM items WHERE name LIKE ?", ('%' + keyword + '%',))
         items_data = {"items": []}
