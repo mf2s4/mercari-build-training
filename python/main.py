@@ -40,7 +40,6 @@ def create_tables():
     cur = con.cursor() #create cursor
     cur.execute('''CREATE TABLE IF NOT EXISTS items 
              (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, category_id INTEGER, image_name TEXT)''')
-
     cur.execute('''CREATE TABLE IF NOT EXISTS categories 
                  (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)''')
     con.commit()
@@ -99,20 +98,16 @@ async def add_item(name: str = Form(...), category: str = Form(...), image: Uplo
         cur = con.cursor()
         cur.execute("SELECT id FROM categories WHERE name = ?", (category,))
         category_row = cur.fetchone()
-
         if category_row == None:
             cur.execute("INSERT INTO categories (name) VALUES (?)", (category,))
             con.commit()
             category_id = cur.lastrowid
         else:
             category_id = category_row[0]
-
         cur.execute("INSERT INTO items (name, category_id, image_name) VALUES (?, ?, ?)", (name, category_id, image_name))
         con.commit()
         con.close()
-
         logger.info(f"Receive item: {name}, category_id: {category_id}, category: {category}, image: {image_name}")
-
         return {"message": f"item received: {name}, Category: {category}"}
     except sqlite3.Error as sqlerror:
         logger.error(f"SQLite error occurred: {sqlerror}")
@@ -126,15 +121,12 @@ async def get_image(image_name):
     logger.info(f"Receive image: {image_name}")
     # Create image path
     image_path = images / image_name
-
     if not image_name.endswith(".jpg"):
         logger.error(f"Image path does not end with .jpg")
         raise HTTPException(status_code=400, detail="Image path does not end with .jpg Make sure the file name is correct")
-
     elif not image_path.exists():
         logger.error(f"Image not found: {image_name}")
         image_path = images / "default.jpg"
-
     return FileResponse(image_path)
 
 @app.get("/items/{item_id}")
